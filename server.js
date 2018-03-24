@@ -25,15 +25,23 @@ app.use(express.static("public"));
 //handle uploads
 app.post('/upload', upload.single("photo"),  function(req, res){
     let uniqueId = shortId.generate(); //create id for image
+    if(req.file.size <= 104857601){
+        //if file is below 100mb limit
 
-    //store image data as JSON
-    db.data.save({
-        id: uniqueId,
-        path: req.file.path
-    });
+        //store image data as JSON
+        db.data.save({
+            id: uniqueId,
+            path: req.file.path
+        });
 
-    //redirect client too image
-    res.redirect("image/" + uniqueId);
+        //redirect client too image
+        res.redirect("image/" + uniqueId);
+
+    } else {
+        //if file is above 100mb limit
+
+        res.send("file is too large");
+    }
 });
 
 //handle downloads
